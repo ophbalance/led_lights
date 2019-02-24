@@ -8,10 +8,18 @@
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
 #include <Fonts/Org_01.h>
+#include "index.h"
 #define MATRIX_HEIGHT 6
 #define MATRIX_WIDTH 24
 #define PIN D2
 #define PASS 1
+
+// Setting up some loop variables here
+int mywidth = MATRIX_WIDTH;
+int pass = 1;
+int myloop = 1;
+int caseloop = 1;
+int brightLevel=5;
 
 IPAddress    apIP(10, 10, 1, 1);  // Defining a static IP address: local & gateway
                                     // Default IP in AP mode is 192.168.4.1
@@ -64,18 +72,19 @@ void handleRoot() {
 
  /* Dynamically generate the LED toggle link, based on its current state (on or off)*/
   char ledText[80];
-  
-  //if (ledState) {
-  //  strcpy(ledText, "LED is on. <a href=\"/?led=0\">Turn it OFF!</a>");
- // }
-
-  //else {
-  //  strcpy(ledText, "LED is OFF. <a href=\"/?led=1\">Turn it ON!</a>");
-  //}
- 
+  if (server.arg("led")==""){pass=1;}else{pass = server.arg("led").toInt();}
+  /*
+  if (pass==1) {
+    strcpy(ledText, "<a href=\"/?led=1\" class=\"buttongrey\">Red Alliance</a> <a href=\"/?led=2\" class=\"buttonblue\">Blue Alliance</a> <a href=\"/?led=3\" class=\"buttongreen\">Green Alliance</a>");
+  } else if (pass==2) {
+    strcpy(ledText, "<a href=\"/?led=1\" class=\"buttonred\">Red Alliance</a> <a href=\"/?led=2\" class=\"buttongrey\">Blue Alliance</a> <a href=\"/?led=3\" class=\"buttongreen\">Green Alliance</a>");
+  } else if (pass==3) {
+    strcpy(ledText, "<a href=\"/?led=1\" class=\"buttonred\">Red Alliance</a> <a href=\"/?led=2\" class=\"buttonblue\">Blue Alliance</a> <a href=\"/?led=3\" class=\"buttongrey\">Green Alliance</a>");
+  }*/
+  Serial.println(pass);
   //ledState = digitalRead(ledPin);
 
-  char html[1000];
+  
   int sec = millis() / 1000;
   int min = sec / 60;
   int hr = min / 60;
@@ -83,31 +92,7 @@ void handleRoot() {
   int brightness = analogRead(A0);
   brightness = (int)(brightness + 5) / 10; //converting the 0-1024 value to a (approximately) percentage value
 
-// Build an HTML page to display on the web-server root address
-  snprintf ( html, 1000,
-
-"<html>\
-  <head>\
-    <meta http-equiv='refresh' content='10'/>\
-    <title>ESP8266 WiFi Network</title>\
-    <style>\
-      body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; font-size: 1.5em; Color: #000000; }\
-      h1 { Color: #AA0000; }\
-    </style>\
-  </head>\
-  <body>\
-    <h1>ESP8266 Wi-Fi Access Point and Web Server Demo</h1>\
-    <p>Uptime: %02d:%02d:%02d</p>\
-    <p>Brightness: %d%</p>\
-    <p>%s<p>\
-    <p>This page refreshes every 10 seconds. Click <a href=\"javascript:window.location.reload();\">here</a> to refresh the page now.</p>\
-  </body>\
-</html>",
-
-    hr, min % 60, sec % 60,
-    brightness,
-    ledText
-  );
+  String html = MAIN_page;
   server.send ( 200, "text/html", html );
   digitalWrite ( LED_BUILTIN, 1 );
 }
@@ -156,8 +141,9 @@ void setup() {
   Serial.println(myIP);
  
   server.on ( "/", handleRoot );
-  server.on ( "/led=1", handleRoot);
-  server.on ( "/led=0", handleRoot);
+  server.on ( "/led=3", handleRoot);
+  server.on ( "/led=2", handleRoot);
+  server.on ( "/led=1", handleRoot);  
   server.on ( "/inline", []() {
     server.send ( 200, "text/plain", "this works as well" );
   } );
@@ -167,34 +153,53 @@ void setup() {
   Serial.println("HTTP server started");
 }
 
-// Setting up some loop variables here
-int mywidth = MATRIX_WIDTH;
-int pass = 1;
-int myloop = 1;
-int brightLevel=5;
+
 
 // Loop that runs until we turn off the device
 void loop() {
   server.handleClient();
-  
+
+  // Max bright every 5th loop
   if (myloop%5 ==0){
     matrix.setBrightness(255);
   } else {
     matrix.setBrightness(brightLevel);
   }
-  Serial.println("loop");
-  drawStillFox();
-  drawText(pass);
-  drawFox();
-  drawFlashyFox();
+
+  switch (caseloop) {
+  case 1:
+    drawStillFox();Serial.println("case1");
+    break;
+  case 2:
+    drawText(pass);Serial.println("case2");
+    break;
+  case 3:
+    drawFox();Serial.println("case3");
+    break;
+  case 4:
+    drawText(pass);Serial.println("case4");
+    break;
+  case 5:
+    drawFlashyFox();Serial.println("case5");
+    break;
+  case 6:
+    drawText(pass);Serial.println("case6");
+    break;
+  default:
+    // if nothing else matches, do the default
+    // default is optional
+    break;
+  }
+
+  //how many times we're in here
+  caseloop++;
   myloop++;
-  pass++;
-  if(pass >= 4) pass = 1;
+  //pass++;
+  if(caseloop >= 6) caseloop = 1;
 }
 
 
 void drawFox(){
-  Serial.println("draw fox");
   matrix.fillScreen(0);
   matrix.show();
   delay(300);
