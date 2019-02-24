@@ -15,8 +15,8 @@
 
 // This is a 24 x grid.  You will need to change the array's below if the size of the grid changes
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(24, 6, PIN,
-  NEO_MATRIX_TOP     + NEO_MATRIX_LEFT +
-  NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG,
+  NEO_MATRIX_BOTTOM     + NEO_MATRIX_LEFT +
+  NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
   NEO_GRB            + NEO_KHZ800);
 
 const uint16_t colors[] = {
