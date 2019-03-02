@@ -18,7 +18,7 @@ input[type=range]:focus {
   outline: none;
 }
 input[type=range]::-webkit-slider-runnable-track {
-  width: 100%;
+  width: 75%;
   height: 8.4px;
   cursor: pointer;
   animate: 0.2s;
@@ -107,14 +107,24 @@ input[type=range]:focus::-ms-fill-upper {
       request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       request.send(encodeURI(slider)+"="+value);
     }
+    function sendText(txt, value) {
+      console.log(txt+": "+value);
+    
+      var request = new XMLHttpRequest();
+      request.open("POST", "http://10.10.1.1/"); // Add the right URI
+      request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      request.send(encodeURI(txt)+"="+value);
+    }
     </script>
   </head>
   <body>
     <h1>ESP8266 Wi-Fi Access Point and Web Server Demo</h1>
     <p><a href='/?led=1' class='buttonred'>Red Alliance</a> <a href='/?led=2' class='buttonblue'>Blue Alliance</a> <a href='/?led=3' class='buttongreen'>Green Alliance</a></p>
-    <p>
-    <input id="bright" type="range" min=0 max=255 
-onchange="sendPosition(this.id, this.value);"></p>
+    <p><input id="bright" type="range" min=0 max=255 onchange="sendPosition(this.id, this.value);"></p>
+    <form action="" method="get" name="meh">
+    <p><input id="formtxt" name="formtxt" value="" ></p>
+    <p><input type="submit" id="submit" name="submit" value="submit"></p>
+    
   </body>
 </html>
 )=====";

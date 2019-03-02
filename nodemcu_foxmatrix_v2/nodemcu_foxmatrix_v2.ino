@@ -19,7 +19,8 @@ int mywidth = MATRIX_WIDTH;
 int pass = 1;
 int myloop = 1;
 int caseloop = 1;
-int brightLevel=50;
+int brightLevel=5;
+String passTxt="";
 
 IPAddress    apIP(10, 10, 1, 1);  // Defining a static IP address: local & gateway
                                     // Default IP in AP mode is 192.168.4.1
@@ -68,7 +69,9 @@ void handleRoot() {
   char ledText[80];
   if (server.arg("led")==""){pass=1;}else{pass = server.arg("led").toInt();}
   if (server.arg("bright")==""){brightLevel=5;}else{brightLevel = server.arg("bright").toInt();}
+  if (server.arg("formtxt")==""){passTxt="";}else{passTxt = String(server.arg("formtxt"));}
   Serial.println(pass);
+  Serial.println(passTxt);
   Serial.println(brightLevel);
 
   
@@ -152,19 +155,19 @@ void loop() {
     drawStillFox();Serial.println("case1");
     break;
   case 2:
-    drawText(pass);Serial.println("case2");
+    drawText(pass,passTxt);Serial.println("case2");
     break;
   case 3:
     drawFox();Serial.println("case3");
     break;
   case 4:
-    drawText(pass);Serial.println("case4");
+    drawText(pass,passTxt);Serial.println("case4");
     break;
   case 5:
     drawFlashyFox();Serial.println("case5");
     break;
   case 6:
-    drawText(pass);Serial.println("case6");
+    drawText(pass,passTxt);Serial.println("case6");
     break;
   default:
     // if nothing else matches, do the default
@@ -236,7 +239,7 @@ void drawFlashyFox(){
   //delay(300);
 }
 
-void drawText(int passme) {
+void drawText(int passme, String passtxt) {
   int looper=150;
   matrix.setTextColor(colors[passme]);
   for(int f=0;f<looper;f++){
@@ -245,8 +248,10 @@ void drawText(int passme) {
     if(--mywidth < -100) {
       mywidth = matrix.width();
     }    
-    
-    if(passme==1){
+
+    if(passtxt!=""){
+      matrix.print((passtxt));
+    } else if(passme==1){
       matrix.print(F("6004 RED ALLIANCE"));
     } else if (passme==2) {
       matrix.print(F("6004 BLUE ALLIANCE"));
