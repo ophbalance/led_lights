@@ -9,8 +9,8 @@
 #include <Adafruit_NeoPixel.h>
 #include <Fonts/Org_01.h>
 #include "index.h"
-#define MATRIX_HEIGHT 6
-#define MATRIX_WIDTH 21
+#define MATRIX_HEIGHT 8
+#define MATRIX_WIDTH 32
 #define PIN 14
 #define PASS 1
 
@@ -19,7 +19,7 @@ int mywidth = MATRIX_WIDTH;
 int pass = 1;
 int myloop = 1;
 int caseloop = 1;
-int brightLevel=200;
+int brightLevel=5;
 String passTxt="";
 
 IPAddress    apIP(10, 10, 1, 1);  // Defining a static IP address: local & gateway
@@ -30,9 +30,9 @@ const char *ssid = "6004-galaxy-hat";
 const char *password = "hellfyre";
 
 //Matrix setup
-Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(21, 6, PIN,
+Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(32, 8, PIN,
   NEO_MATRIX_TOP     + NEO_MATRIX_LEFT +
-  NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG,
+  NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
   NEO_GRB            + NEO_KHZ800);
 
 //Colors array
@@ -68,7 +68,7 @@ void handleRoot() {
 
   char ledText[80];
   if (server.arg("led")==""){pass=1;}else{pass = server.arg("led").toInt();}
-  if (server.arg("bright")==""){brightLevel=200;}else{brightLevel = server.arg("bright").toInt();}
+  if (server.arg("bright")==""){brightLevel=5;}else{brightLevel = server.arg("bright").toInt();}
   if (server.arg("formtxt")==""){passTxt="";}else{passTxt = String(server.arg("formtxt"));}
   
   
@@ -101,7 +101,7 @@ void handleNotFound() {
 }
 
 void setup() {
-  matrix.setFont(&Org_01);
+  //matrix.setFont(&Org_01);
   matrix.begin();  
   matrix.setTextWrap(false);
   matrix.setBrightness(5);
@@ -210,7 +210,7 @@ void drawStillFox(){
 void drawFlashyFox(){
   matrix.fillScreen(0);
   matrix.show();
-  matrix.setBrightness(50);
+  matrix.setBrightness(5);
   for(unsigned char i=0;i<45;i++){
    int mycnt=0;
     for(unsigned char x=0; x<MATRIX_HEIGHT; x++) {
@@ -241,7 +241,7 @@ void drawText(int passme, String passtxt) {
   matrix.setTextColor(colors[passme]);
   for(int f=0;f<looper;f++){
     matrix.fillScreen(0);
-    matrix.setCursor(mywidth, 4);
+    matrix.setCursor(mywidth, 0);
     if(--mywidth < -100) {
       mywidth = matrix.width();
     }    

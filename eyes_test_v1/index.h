@@ -119,13 +119,12 @@ input[type=range]:focus::-ms-fill-upper {
   </head>
   <body>
     <h1>ESP8266 Wi-Fi Access Point and Web Server Demo</h1>
-    <form action="" method="get" name="meh">
     <p><a href='/?led=1' class='buttonred'>Red Alliance</a> <a href='/?led=2' class='buttonblue'>Blue Alliance</a> <a href='/?led=3' class='buttongreen'>Green Alliance</a></p>
     <p><input id="bright" type="range" min=0 max=255 onchange="sendPosition(this.id, this.value);"></p>
     <form action="" method="get" name="meh">
     <p><input id="formtxt" name="formtxt" value="" ></p>
     <p><input type="submit" id="submit" name="submit" value="submit"></p>
-    </form>
+    
   </body>
 </html>
 )=====";
