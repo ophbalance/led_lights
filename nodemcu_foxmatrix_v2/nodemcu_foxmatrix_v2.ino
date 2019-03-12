@@ -27,7 +27,7 @@ IPAddress    apIP(10, 10, 1, 1);  // Defining a static IP address: local & gatew
 
 /* This are the WiFi access point settings. Update them to your likin */
 const char *ssid = "6004-galaxy-hat";
-const char *password = "hellfyre";
+const char *password = "yomomma2";
 
 //Matrix setup
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(21, 6, PIN,

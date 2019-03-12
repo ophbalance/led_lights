@@ -2,18 +2,18 @@
 ** For more details see http://42bots.com.
 */
 
-//#include <ESP8266WiFi.h>
-//#include <ESP8266WebServer.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
 //#include <Fonts/Org_01.h>
-//#include "index.h"
+#include "index.h"
 #define MATRIX_HEIGHT 8
 #define MATRIX_WIDTH 32
-#define PIN 6
+#define PIN D2
+#define BUTTON_PIN D3
 #define PASS 1
-#define BUTTON_PIN   5
 
 // Setting up some loop variables here
 int mywidth = MATRIX_WIDTH;
@@ -22,14 +22,17 @@ int myloop = 1;
 int caseloop = 1;
 int brightLevel=5;
 String passTxt="";
-int oldState = 0;
+int buttonState = 0;
+unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
+unsigned long debounceDelay = 50;    // the debounce time; increase if the output flickers
+int lastButtonState = LOW;   // the previous reading from the input pin
 
-//IPAddress    apIP(10, 10, 1, 1);  // Defining a static IP address: local & gateway
+IPAddress    apIP(10, 10, 1, 1);  // Defining a static IP address: local & gateway
                                     // Default IP in AP mode is 192.168.4.1
 
 /* This are the WiFi access point settings. Update them to your likin */
-const char *ssid = "6004-galaxy-hat";
-const char *password = "hellfyre";
+const char *ssid = "6004-pit";
+const char *password = "yomomma2";
 
 //Matrix setup
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(32, 8, PIN,
@@ -64,9 +67,9 @@ const unsigned char flashyfox[MATRIX_HEIGHT][MATRIX_WIDTH]={
 };
 
 // Define a web server at port 80 for HTTP
-//ESP8266WebServer server(80);
+ESP8266WebServer server(80);
 
-/*
+
 void handleRoot() {
 
 
@@ -85,8 +88,8 @@ void handleRoot() {
   server.send ( 200, "text/html", html );
   digitalWrite ( LED_BUILTIN, 1 );
 }
-*/
-/*
+
+
 void handleNotFound() {
   //digitalWrite ( LED_BUILTIN, 0 );
   String message = "File Not Found\n\n";
@@ -104,19 +107,17 @@ void handleNotFound() {
 
   server.send ( 404, "text/plain", message );
 }
-*/
+
 void setup() {
   //matrix.setFont(&Org_01);
   matrix.begin();  
   matrix.setTextWrap(false);
   matrix.setBrightness(5);
-  pinMode(BUTTON_PIN, INPUT);
-  digitalWrite(BUTTON_PIN, HIGH);
   delay(1000);
   Serial.begin(115200);
   Serial.println();
   Serial.println("Configuring access point...");
-/*
+
   //set-up the custom IP address
   WiFi.mode(WIFI_AP_STA);
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));   // subnet FF FF FF 00  
@@ -139,35 +140,31 @@ void setup() {
   
   server.begin();
   Serial.println("HTTP server started");
-  */
+
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  
 }
 
 
 
 // Loop that runs until we turn off the device
 void loop() {
-  //server.handleClient();
-  oldState = digitalRead(BUTTON_PIN);
-  Serial.println(oldState);
+  server.handleClient();
+  readPinState();
+  Serial.println(pass);
   // Max bright every 5th loop
   //if (myloop%5 ==0){
   //  matrix.setBrightness(5);
   //} else {
   //  matrix.setBrightness(brightLevel);
   //}
-  if (oldState == HIGH) {
-    pass++;
-    if(pass > 3){pass=1;}
-    Serial.println("is high");
-  } else if (oldState == LOW){
-    Serial.println("is low");
-  }
+
   switch (caseloop) {
   case 1:
     drawStillFox();Serial.println("case1");
     break;
   case 2:
-    drawText(pass,passTxt);Serial.println("case2");
+   // Serial.println("case2");drawText(pass,passTxt);
     break;
   case 3:
     drawFox();Serial.println("case3");
@@ -194,7 +191,29 @@ void loop() {
   if(caseloop >= 5) caseloop = 1;
 }
 
+void readPinState(){
+  int reading = digitalRead(BUTTON_PIN);
+  if (reading != lastButtonState) {
+    // reset the debouncing timer
+    lastDebounceTime = millis();
+  }
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    // whatever the reading is at, it's been there for longer than the debounce
+    // delay, so take it as the actual current state:
 
+    // if the button state has changed:
+    if (reading != buttonState) {
+      buttonState = reading;
+
+      // only toggle the LED if the new button state is HIGH
+      if (buttonState == LOW) {
+        pass++;
+        if(pass>3){pass=1;}
+      }
+    }    
+  }
+  lastButtonState = reading;
+}
 void drawFox(){
   matrix.fillScreen(0);
   matrix.show();
@@ -202,7 +221,8 @@ void drawFox(){
   for (unsigned char i=0; i<64;i++){
   for(unsigned char x=0; x<MATRIX_HEIGHT; x++) {
     for(unsigned char y=0; y<MATRIX_WIDTH; y++) {      
-      matrix.drawPixel((y-22)+i, x, colors[fox1[x][y]]);      
+      matrix.drawPixel((y-22)+i, x, colors[fox1[x][y]]);    
+      readPinState();  
     }
   } matrix.show();
   delay(100);
@@ -216,7 +236,8 @@ void drawStillFox(){
   
   for(unsigned char x=0; x<MATRIX_HEIGHT; x++) {
     for(unsigned char y=0; y<MATRIX_WIDTH; y++) {      
-      matrix.drawPixel(y, x, colors[fox1[x][y]]);      
+      matrix.drawPixel(y, x, colors[fox1[x][y]]);    
+      readPinState();  
     }
   } matrix.show();
   delay(10000);  
@@ -242,6 +263,7 @@ void drawFlashyFox(){
           matrix.setPixelColor(mycnt,random(1,255),random(1,255),random(1,255));
         }
         mycnt++;
+        readPinState();
       }
       
     } delay(60);
@@ -263,12 +285,16 @@ void drawText(int passme, String passtxt) {
 
     if(passtxt!=""){
       matrix.print((passtxt));
+      readPinState();
     } else if(passme==1){
       matrix.print(F("6004 RED ALLIANCE"));
+      readPinState();
     } else if (passme==2) {
       matrix.print(F("6004 BLUE ALLIANCE"));
+      readPinState();
     } else if (passme==3){
       matrix.print(F("6004 GREEN ALLIANCE"));
+      readPinState();
     }
     
     
