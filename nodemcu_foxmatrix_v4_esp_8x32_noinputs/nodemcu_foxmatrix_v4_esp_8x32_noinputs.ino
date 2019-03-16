@@ -11,8 +11,8 @@
 #include "index.h"
 #define MATRIX_HEIGHT 8
 #define MATRIX_WIDTH 32
-#define PIN D5
-#define BUTTON_PIN D3
+#define PIN 14
+#define BUTTON_PIN 14
 #define PASS 1
 
 // Setting up some loop variables here
@@ -142,7 +142,7 @@ void loop() {
   myloop++;
   pass++;
   if(pass >= 3) pass=1;
-  if(caseloop >= 7) caseloop = 1;
+  if(caseloop >= 5) caseloop = 1;
 }
 
 void readPinState(){

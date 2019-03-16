@@ -12,6 +12,7 @@
 #define MATRIX_HEIGHT 6
 #define MATRIX_WIDTH 21
 #define PIN 14
+#define PIN 12
 #define PASS 1
 
 // Setting up some loop variables here
@@ -19,7 +20,7 @@ int mywidth = MATRIX_WIDTH;
 int pass = 1;
 int myloop = 1;
 int caseloop = 1;
-int brightLevel=200;
+int brightLevel=100;
 String passTxt="";
 
 IPAddress    apIP(10, 10, 1, 1);  // Defining a static IP address: local & gateway
