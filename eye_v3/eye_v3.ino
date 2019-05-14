@@ -7,10 +7,17 @@
 #define MATRIX_HEIGHT 8
 #define MATRIX_WIDTH 32
 #define PIN D2
-#define BUTTON_PIN 14
+#define BUTTON_PIN D3
 #define PASS 1
 
 int brightLevel=15;
+int pass = 1;
+
+// button bounce
+int buttonState = 0;
+unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
+unsigned long debounceDelay = 50;    // the debounce time; increase if the output flickers
+int lastButtonState = LOW;   // the previous reading from the input pin
 
 //Matrix setup
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(32, 8, PIN,
@@ -38,42 +45,46 @@ void setup() {
   Serial.begin(115200);
   Serial.println();
   Serial.println("start");
-  
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   //random along display
-  int setX = random(0,24);
+  int setX = random(0,13);
   int setY = random(1,7);
- 
+  int randColor = random(1,5);
 
-  drawEye(setX, setY);
-  drawBlink(setX,0);
+  drawEye(setX, setY, randColor);
+  drawBlink(setX,0, randColor);
  
 }
 
-void drawEye(int x, int y){
+// Draw the eye(s).  If sent random x/y will bounce around matrix
+void drawEye(int x, int y, int color){
   
   
   //random amount to look around
   int randLook = random(3,8);
 
-  //draw eye  
+  //draw eye 1
   for(int i=0;i<=randLook;i++){
     //random x/y for pupil
     int randX=random(x-2,x+5);
     int randY=random(3,5);
     //fill blank and redrew with pupil
     matrix.fillScreen(0);
-    matrix.drawBitmap(x, 0, blink_1, 8, 8, colors[4]);
+    matrix.drawBitmap(x, 0, blink_1, 8, 8, colors[color]);
+    matrix.drawBitmap(x+10, 0, blink_1, 8, 8, colors[color]);
     matrix.fillRect(randX+2, randY, 3, 3, colors[0]);  
+    matrix.fillRect(randX+2+10, randY, 3, 3, colors[0]);  
     matrix.show();
     delay(1000);
   }
 }
 
-void drawBlink(int x, int y){
+// Draw the eye(s) blinking.  If sent random x/y will bounce around matrix
+void drawBlink(int x, int y, int color){
   
   //draw closing blink
   int looper = 5;
@@ -81,22 +92,26 @@ void drawBlink(int x, int y){
     matrix.fillScreen(0);
     switch (f) {
       case 2:
-        matrix.drawBitmap(x, y, blink_2, 8, 8, colors[4]);
+        matrix.drawBitmap(x, y, blink_2, 8, 8, colors[color]);
+        matrix.drawBitmap(x+10, y, blink_2, 8, 8, colors[color]);
         break;
      case 3:
-        matrix.drawBitmap(x, y, blink_3, 8, 8, colors[4]);
+        matrix.drawBitmap(x, y, blink_3, 8, 8, colors[color]);
+        matrix.drawBitmap(x+10, y, blink_3, 8, 8, colors[color]);
         break;
      case 4:
-        matrix.drawBitmap(x, y, blink_4, 8, 8, colors[4]);
+        matrix.drawBitmap(x, y, blink_4, 8, 8, colors[color]);
+        matrix.drawBitmap(x+10, y, blink_4, 8, 8, colors[color]);
         break;
      case 5:
-        matrix.drawBitmap(x, y, blink_5, 8, 8, colors[4]);
+        matrix.drawBitmap(x, y, blink_5, 8, 8, colors[color]);
+        matrix.drawBitmap(x+10, y, blink_5, 8, 8, colors[color]);
         break;
     }    
     matrix.show();
     delay(50);
   }
-  matrix.fillScreen(0);
+  matrix.fillScreen(1);
   matrix.show();
   //draw open blink
   looper = 1;
@@ -104,19 +119,24 @@ void drawBlink(int x, int y){
     matrix.fillScreen(0);
     switch (f) {
       case 5:
-        matrix.drawBitmap(x, y, blink_5, 8, 8, colors[4]);
+        matrix.drawBitmap(x, y, blink_5, 8, 8, colors[color]);
+        matrix.drawBitmap(x+10, y, blink_5, 8, 8, colors[color]);
         break;
      case 4:
-        matrix.drawBitmap(x, y, blink_4, 8, 8, colors[4]);
+        matrix.drawBitmap(x, y, blink_4, 8, 8, colors[color]);
+        matrix.drawBitmap(x+10, y, blink_4, 8, 8, colors[color]);
         break;
      case 3:
-        matrix.drawBitmap(x, y, blink_3, 8, 8, colors[4]);
+        matrix.drawBitmap(x, y, blink_3, 8, 8, colors[color]);
+        matrix.drawBitmap(x+10, y, blink_3, 8, 8, colors[color]);
         break;
      case 2:
-        matrix.drawBitmap(x, y, blink_2, 8, 8, colors[4]);
+        matrix.drawBitmap(x, y, blink_2, 8, 8, colors[color]);
+        matrix.drawBitmap(x+10, y, blink_2, 8, 8, colors[color]);
         break;
      case 1:
-        matrix.drawBitmap(x, y, blink_1, 8, 8, colors[4]);
+        matrix.drawBitmap(x, y, blink_1, 8, 8, colors[color]);
+        matrix.drawBitmap(x+10, y, blink_1, 8, 8, colors[color]);
         break;
     }    
     matrix.show();
@@ -124,4 +144,42 @@ void drawBlink(int x, int y){
   }
   matrix.fillScreen(0);
   matrix.show();
+}
+
+void brakeLight(){
+  matrix.setBrightness(200);
+  matrix.fillScreen(255);
+  matrix.show();
+}
+
+void remBrakeLight(){
+  matrix.setBrightness(25);
+  matrix.fillScreen(0);
+  matrix.show();
+}
+
+// Read button for stop light
+void readPinState(){
+  int reading = digitalRead(BUTTON_PIN);
+  if (reading != lastButtonState) {
+    // reset the debouncing timer
+    lastDebounceTime = millis();
+  }
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    // whatever the reading is at, it's been there for longer than the debounce
+    // delay, so take it as the actual current state:
+
+    // if the button state has changed:
+    if (reading != buttonState) {
+      buttonState = reading;
+
+      // only toggle the LED if the new button state is HIGH
+      if (buttonState == LOW) {
+        brakeLight();
+      } else {
+        remBrakeLight();
+      }
+    }    
+  }
+  lastButtonState = reading;
 }
