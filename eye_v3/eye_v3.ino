@@ -31,12 +31,45 @@ const uint16_t colors[] = {
   matrix.Color(0, 0, 0), matrix.Color(255, 165, 0), matrix.Color(255, 0, 0), matrix.Color(0, 0, 255), matrix.Color(0, 255, 0), matrix.Color(255, 255, 255) };
 
 // Bitmaps
+// blink
 static const uint8_t PROGMEM blink_1[8] = {B01111110, B11111111, B11111111, B11111111, B11111111, B11111111, B11111111, B01111110};
 static const uint8_t PROGMEM blink_2[8] = {B00000000, B00000000, B00111100, B01111110, B01111110, B00111100, B00000000, B00000000};
 static const uint8_t PROGMEM blink_3[8] = {B00000000, B00000000, B00000000, B01111110, B01111110, B00000000, B00000000, B00000000};
 static const uint8_t PROGMEM blink_4[8] = {B00000000, B00000000, B00000000, B00000000, B01111110, B00000000, B00000000, B00000000};
 static const uint8_t PROGMEM blink_5[8] = {B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000};
-
+// Angry eye
+static const uint8_t PROGMEM angry_left[8] = {
+  B10000000, 
+  B11100000, 
+  B11110000, 
+  B11111000, 
+  B11111100, 
+  B11111110, 
+  B11111111, 
+  B01111110
+  };
+static const uint8_t PROGMEM angry_right[8] = {
+  B00000001, 
+  B00000111, 
+  B00001111, 
+  B00011111, 
+  B00111111, 
+  B01111111, 
+  B11111111, 
+  B01111110
+  };  
+// Happy
+static const uint8_t PROGMEM happy1[8] = {
+  B01111110, 
+  B11111111, 
+  B11111111, 
+  B11111111, 
+  B11100111, 
+  B11000011, 
+  B10000001, 
+  B00000000
+  };  
+  
 void setup() {
   // put your setup code here, to run once:
   matrix.begin();  
@@ -54,12 +87,47 @@ void loop() {
   int setX = random(0,13);
   int setY = random(1,7);
   int randColor = random(1,5);
+  int randEffect = random(1,5);
 
-  drawEye(setX, setY, randColor);
-  drawBlink(setX,0, randColor);
+  switch (randEffect){
+    case 1: 
+      drawEye(setX, setY, randColor);
+      drawBlink(setX,0, randColor);
+      break;
+    case 2:
+      drawAngry(setX, randColor);
+      drawBlink(setX,0, randColor);
+      break;
+    case 3:
+      brakeLight();
+      delay(1000);
+      remBrakeLight();
+    case 4:
+      drawHappy(setX, randColor);
+      drawBlink(setX,0, randColor);
+  }
+  //drawEye(setX, setY, randColor);
+  //drawBlink(setX,0, randColor);
  
 }
 
+// Draw Happy Eye
+void drawHappy(int x, int color){
+  matrix.fillScreen(0);
+  matrix.drawBitmap(x, 0, happy1, 8, 8, colors[color]);
+  matrix.drawBitmap(x+10, 0, happy1, 8, 8, colors[color]);
+  matrix.show();
+  delay(5000);
+}
+
+// Draw Angry Eye
+void drawAngry(int x, int color){
+  matrix.fillScreen(0);
+  matrix.drawBitmap(x, 0, angry_left, 8, 8, colors[color]);
+  matrix.drawBitmap(x+10, 0, angry_right, 8, 8, colors[color]);
+  matrix.show();
+  delay(5000);
+}
 // Draw the eye(s).  If sent random x/y will bounce around matrix
 void drawEye(int x, int y, int color){
   
@@ -79,7 +147,7 @@ void drawEye(int x, int y, int color){
     matrix.fillRect(randX+2, randY, 3, 3, colors[0]);  
     matrix.fillRect(randX+2+10, randY, 3, 3, colors[0]);  
     matrix.show();
-    delay(1000);
+    delay(1500);
   }
 }
 
