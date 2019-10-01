@@ -105,30 +105,21 @@ void loop() {
       //drawEye(setX, setY, randColor);
       //drawBlink(setX,0, randColor);
       Serial.println("case1");
-      
-      delay(1000); 
       drawSingleEye(setX, randColor);
-      
+      drawSingleBlink(setX,0, randColor);
       break;
     case 2:
-      //drawAngry(setX, randColor);
-      //drawBlink(setX,0, randColor);
+      drawSingleAngry(setX, randColor);
+      drawBlink(setX,0, randColor);
       Serial.println("case2");
-      break;      
+      break;   
     case 3:
-      //brakeLight();
-      //delay(2000);
-      //remBrakeLight();
-      Serial.println("case3");
-      break;
-    case 4:
-      //drawHappy(setX, randColor);
-      //drawBlink(setX,0, randColor);
-      Serial.println("case4");
+      drawSingleHappy(setX, randColor);
+      drawBlink(setX,0, randColor);      
       break;
   }
   mainLoop++;
-  if(mainLoop>4){mainLoop=1;}
+  if(mainLoop>3){mainLoop=1;}
  
 }
 
@@ -140,6 +131,15 @@ void drawHappy(int x, int color){
   matrix.show();
   delay(5000);
 }
+void drawSingleHappy(int x, int color){
+  matrix.fillScreen(0);
+  matrix2.fillScreen(0);
+  matrix.drawBitmap(0, 0, happy1, 8, 8, colors[color]);
+  matrix2.drawBitmap(0, 0, happy1, 8, 8, colors[color]);
+  matrix.show();
+  matrix2.show();
+  delay(5000);
+}
 
 // Draw Angry Eye
 void drawAngry(int x, int color){
@@ -149,6 +149,16 @@ void drawAngry(int x, int color){
   matrix.show();
   delay(5000);
 }
+void drawSingleAngry(int x, int color){
+  matrix.fillScreen(0);
+  matrix2.fillScreen(0);
+  matrix.drawBitmap(0, 0, angry_left, 8, 8, colors[color]);
+  matrix2.drawBitmap(0, 0, angry_right, 8, 8, colors[color]);
+  matrix.show();
+  matrix2.show();
+  delay(5000);
+}
+
 // Draw the eye(s).  If sent random x/y will bounce around matrix
 /*void drawEye(int x, int y, int color){
   
@@ -181,12 +191,8 @@ void drawSingleEye(int x, int color){
   //draw eye 1
   for(int i=0;i<=randLook;i++){
     //random x/y for pupil
-    int randX=random(myx-2,myx+5);
-    Serial.println("X:");
-    Serial.println(randX);
-    int randY=random(myy-2,myy+5);
-    Serial.println("Y:");
-    Serial.println(randY);
+    int randX=random(3,6);
+    int randY=random(3,6);
     //fill blank and redrew with pupil
     matrix.drawBitmap(0, 0, blink_1, 8, 8, colors[color]);
     matrix.fillRect(randX, randY, 3, 3, colors[0]);  
@@ -269,60 +275,68 @@ void drawSingleBlink(int x, int y, int color){
   int looper = 5;
   for(int f=2;f<=looper;f++){
     matrix.fillScreen(0);
+    matrix2.fillScreen(0);
     switch (f) {
       case 2:
-        matrix.drawBitmap(x, y, blink_2, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_2, 8, 8, colors[color]);
+        matrix.drawBitmap(0, 0, blink_2, 8, 8, colors[color]);
+        matrix2.drawBitmap(0, 0, blink_2, 8, 8, colors2[color]);
         break;
      case 3:
-        matrix.drawBitmap(x, y, blink_3, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_3, 8, 8, colors[color]);
+        matrix.drawBitmap(0, 0, blink_3, 8, 8, colors[color]);
+        matrix2.drawBitmap(0, 0, blink_3, 8, 8, colors2[color]);
         break;
      case 4:
-        matrix.drawBitmap(x, y, blink_4, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_4, 8, 8, colors[color]);
+        matrix.drawBitmap(0, 0, blink_4, 8, 8, colors[color]);
+        matrix2.drawBitmap(0, 0, blink_4, 8, 8, colors2[color]);
         break;
      case 5:
-        matrix.drawBitmap(x, y, blink_5, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_5, 8, 8, colors[color]);
+        matrix.drawBitmap(0, 0, blink_5, 8, 8, colors[color]);
+        matrix2.drawBitmap(0, 0, blink_5, 8, 8, colors2[color]);
         break;
     }    
     matrix.show();
+    matrix2.show();
     delay(50);
   }
   matrix.fillScreen(1);
   matrix.show();
+  matrix2.fillScreen(1);
+  matrix2.show();
   //draw open blink
   looper = 1;
   for(int f=5;f>=looper;f--){
     matrix.fillScreen(0);
+    matrix2.fillScreen(0);
     switch (f) {
       case 5:
-        matrix.drawBitmap(x, y, blink_5, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_5, 8, 8, colors[color]);
+        matrix.drawBitmap(0, y, blink_5, 8, 8, colors[color]);
+        matrix2.drawBitmap(0, 0, blink_5, 8, 8, colors2[color]);
         break;
      case 4:
-        matrix.drawBitmap(x, y, blink_4, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_4, 8, 8, colors[color]);
+        matrix.drawBitmap(0, 0, blink_4, 8, 8, colors[color]);
+        matrix2.drawBitmap(0, 0, blink_4, 8, 8, colors2[color]);
         break;
      case 3:
-        matrix.drawBitmap(x, y, blink_3, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_3, 8, 8, colors[color]);
+        matrix.drawBitmap(0, 0, blink_3, 8, 8, colors[color]);
+        matrix2.drawBitmap(0, 0, blink_3, 8, 8, colors2[color]);
         break;
      case 2:
-        matrix.drawBitmap(x, y, blink_2, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_2, 8, 8, colors[color]);
+        matrix.drawBitmap(0, 0, blink_2, 8, 8, colors[color]);
+        matrix2.drawBitmap(0, 0, blink_2, 8, 8, colors2[color]);
         break;
      case 1:
-        matrix.drawBitmap(x, y, blink_1, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_1, 8, 8, colors[color]);
+        matrix.drawBitmap(0, 0, blink_1, 8, 8, colors[color]);
+        matrix2.drawBitmap(0, 0, blink_1, 8, 8, colors2[color]);
         break;
     }    
     matrix.show();
+    matrix2.show();
     delay(50);
   }
   matrix.fillScreen(0);
   matrix.show();
+  matrix2.fillScreen(0);
+  matrix2.show();
 }
 
 void brakeLight(){
