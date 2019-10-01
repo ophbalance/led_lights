@@ -1,5 +1,5 @@
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+//#include <ESP8266WiFi.h>
+//#include <ESP8266WebServer.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
@@ -22,12 +22,12 @@ unsigned long debounceDelay = 50;    // the debounce time; increase if the outpu
 int lastButtonState = LOW;   // the previous reading from the input pin
 
 //Matrix setup
-Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(32, 8, PIN,
+Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(8, 8, PIN,
   NEO_MATRIX_TOP     + NEO_MATRIX_LEFT +
-  NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
+  NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
   NEO_GRB            + NEO_KHZ800);
 
-Adafruit_NeoMatrix matrix2 = Adafruit_NeoMatrix(32, 8, PIN2,
+Adafruit_NeoMatrix matrix2 = Adafruit_NeoMatrix(8, 8, PIN2,
   NEO_MATRIX_TOP     + NEO_MATRIX_LEFT +
   NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
   NEO_GRB            + NEO_KHZ800);
@@ -82,10 +82,10 @@ void setup() {
   // put your setup code here, to run once:
   matrix.begin();  
   matrix.setTextWrap(false);
-  matrix.setBrightness(25);
+  matrix.setBrightness(5);
   matrix2.begin();  
   matrix2.setTextWrap(false);
-  matrix2.setBrightness(25);
+  matrix2.setBrightness(5);
   Serial.begin(115200);
   Serial.println();
   Serial.println("start");
@@ -102,21 +102,30 @@ void loop() {
   
   switch (mainLoop){
     case 1: 
-      drawEye(setX, setY, randColor);
-      drawBlink(setX,0, randColor);
-      drawSingleEye(setX, setY, randColor);
+      //drawEye(setX, setY, randColor);
+      //drawBlink(setX,0, randColor);
+      Serial.println("case1");
+      
+      delay(1000); 
+      drawSingleEye(setX, randColor);
+      
       break;
     case 2:
-      drawAngry(setX, randColor);
-      drawBlink(setX,0, randColor);
-      break;
+      //drawAngry(setX, randColor);
+      //drawBlink(setX,0, randColor);
+      Serial.println("case2");
+      break;      
     case 3:
-      brakeLight();
-      delay(2000);
-      remBrakeLight();
+      //brakeLight();
+      //delay(2000);
+      //remBrakeLight();
+      Serial.println("case3");
+      break;
     case 4:
-      drawHappy(setX, randColor);
-      drawBlink(setX,0, randColor);
+      //drawHappy(setX, randColor);
+      //drawBlink(setX,0, randColor);
+      Serial.println("case4");
+      break;
   }
   mainLoop++;
   if(mainLoop>4){mainLoop=1;}
@@ -141,7 +150,7 @@ void drawAngry(int x, int color){
   delay(5000);
 }
 // Draw the eye(s).  If sent random x/y will bounce around matrix
-void drawEye(int x, int y, int color){
+/*void drawEye(int x, int y, int color){
   
   
   //random amount to look around
@@ -161,23 +170,32 @@ void drawEye(int x, int y, int color){
     matrix.show();
     delay(1500);
   }
-}
+}*/
 
 // Draw the eye(s).  If sent random x/y will bounce around matrix
-void drawSingleEye(char pin, int color){
+void drawSingleEye(int x, int color){
   //random amount to look around
   int randLook = random(3,8);
-
+  int myx = 3;
+  int myy = 3;
   //draw eye 1
   for(int i=0;i<=randLook;i++){
     //random x/y for pupil
-    int randX=random(x-2,x+5);
+    int randX=random(myx-2,myx+5);
+    Serial.println("X:");
+    Serial.println(randX);
+    int randY=random(myy-2,myy+5);
+    Serial.println("Y:");
+    Serial.println(randY);
     //fill blank and redrew with pupil
-    matrix.fillScreen(0);
-    matrix.drawBitmap(x, 0, blink_1, 8, 8, colors[color]);
-    matrix.fillRect(randX+2, 0, 3, 3, colors[0]);  
+    matrix.drawBitmap(0, 0, blink_1, 8, 8, colors[color]);
+    matrix.fillRect(randX, randY, 3, 3, colors[0]);  
     matrix.show();
-    delay(1500);
+    matrix2.fillScreen(0);
+    matrix2.drawBitmap(0, 0, blink_1, 8, 8, colors2[color]);
+    matrix2.fillRect(randX, randY, 3, 3, colors2[0]);  
+    matrix.show();
+    delay(5500);
   }
 }
 
