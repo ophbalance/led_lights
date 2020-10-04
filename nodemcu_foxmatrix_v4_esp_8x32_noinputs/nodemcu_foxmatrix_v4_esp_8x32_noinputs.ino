@@ -2,17 +2,17 @@
 ** For more details see http://42bots.com.
 */
 
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+//#include <ESP8266WiFi.h>
+//#include <ESP8266WebServer.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
 //#include <Fonts/Org_01.h>
-#include "index.h"
+//#include "index.h"
 #define MATRIX_HEIGHT 8
 #define MATRIX_WIDTH 32
-#define PIN 14
-#define BUTTON_PIN 14
+#define PIN D2
+//#define BUTTON_PIN 1
 #define PASS 1
 
 // Setting up some loop variables here
@@ -74,7 +74,7 @@ void setup() {
   //matrix.setFont(&Org_01);
   matrix.begin();  
   matrix.setTextWrap(false);
-  matrix.setBrightness(100);
+  matrix.setBrightness(25);
   delay(1000);
   Serial.begin(115200);
   Serial.println();
@@ -92,7 +92,7 @@ void setup() {
   //Serial.println(myIP);
  
 
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  //pinMode(BUTTON_PIN, INPUT_PULLUP);
   
 }
 
@@ -101,7 +101,7 @@ void setup() {
 // Loop that runs until we turn off the device
 void loop() {
   //server.handleClient();
-  readPinState();
+  //readPinState();
   Serial.println(pass);
   // Max bright every 5th loop
   //if (myloop%5 ==0){
@@ -112,28 +112,35 @@ void loop() {
 
   switch (caseloop) {
   case 1:
-    drawStillFox();Serial.println("case1");
+    Serial.println("case1");
+    drawStillFox();
     break;
+  /*
   case 2:
-    Serial.println("case2");drawText(pass,passTxt);
+    Serial.println("case2");
+    //drawText(pass,passTxt);
     break;
   case 3:
-    drawFox();Serial.println("case3");
+    Serial.println("case3");drawFox();
     break;
   case 4:
-    drawText(pass,passTxt);Serial.println("case4");
+    //drawText(pass,passTxt);
+    Serial.println("case4");
     break;
   case 5:
     drawStillFox();Serial.println("case5");
     break;
   case 6:
     passTxt="Go Team 6004!";
-    drawText(pass,passTxt);Serial.println("case6");
+    //drawText(pass,passTxt);
+    Serial.println("case6");
     passTxt="";
     break;
+    */
   default:
     // if nothing else matches, do the default
     // default is optional
+    Serial.println("default");
     break;
   }
 
@@ -146,6 +153,7 @@ void loop() {
 }
 
 void readPinState(){
+  /*
   int reading = digitalRead(BUTTON_PIN);
   if (reading != lastButtonState) {
     // reset the debouncing timer
@@ -167,6 +175,7 @@ void readPinState(){
     }    
   }
   lastButtonState = reading;
+  */
 }
 void drawFox(){
   matrix.fillScreen(0);
@@ -176,7 +185,7 @@ void drawFox(){
   for(unsigned char x=0; x<MATRIX_HEIGHT; x++) {
     for(unsigned char y=0; y<MATRIX_WIDTH; y++) {      
       matrix.drawPixel((y-22)+i, x, colors[fox1[x][y]]);    
-      readPinState();  
+      //readPinState();  
     }
   } matrix.show();
   delay(100);
@@ -184,17 +193,19 @@ void drawFox(){
 }
 
 void drawStillFox(){
+  Serial.println("in function");
   matrix.fillScreen(0);
   matrix.show();
   delay(300);
   
   for(unsigned char x=0; x<MATRIX_HEIGHT; x++) {
     for(unsigned char y=0; y<MATRIX_WIDTH; y++) {      
-      matrix.drawPixel(y, x, colors[fox1[x][y]]);    
-      readPinState();  
+      matrix.drawPixel(y, x, colors[fox1[x][y]]);
     }
   } matrix.show();
+  Serial.println("filled stuff");
   delay(10000);  
+  Serial.println("out of function");
 }
 
 void drawFlashyFox(){
@@ -217,7 +228,7 @@ void drawFlashyFox(){
           matrix.setPixelColor(mycnt,random(1,255),random(1,255),random(1,255));
         }
         mycnt++;
-        readPinState();
+       // readPinState();
       }
       
     } delay(60);
@@ -239,16 +250,16 @@ void drawText(int passme, String passtxt) {
 
     if(passtxt!=""){
       matrix.print((passtxt));
-      readPinState();
+      //readPinState();
     } else if(passme==1){
       matrix.print(F("6004 RED ALLIANCE"));
-      readPinState();
+      //readPinState();
     } else if (passme==2) {
       matrix.print(F("6004 BLUE ALLIANCE"));
-      readPinState();
+      //readPinState();
     } else if (passme==3){
       matrix.print(F("6004 GREEN ALLIANCE"));
-      readPinState();
+      //readPinState();
     }
     
     

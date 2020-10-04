@@ -6,11 +6,11 @@
 
 #define MATRIX_HEIGHT 8
 #define MATRIX_WIDTH 8
-#define EYE 5
-#define EYE2 6
+#define EYE D2
+#define EYE2 D3
 #define PASS 1
 
-int brightLevel=15;
+int brightLevel=60;
 int pass = 1;
 int mainLoop=1;
 
@@ -28,7 +28,7 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(8, 8, EYE,
 
 Adafruit_NeoMatrix matrix2 = Adafruit_NeoMatrix(8, 8, EYE2,
   NEO_MATRIX_TOP     + NEO_MATRIX_LEFT +
-  NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
+  NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
   NEO_GRB            + NEO_KHZ800);
 //Colors array
 //blank, orange, red, blue, white
@@ -81,10 +81,10 @@ void setup() {
   // put your setup code here, to run once:
   matrix.begin();  
   matrix.setTextWrap(false);
-  matrix.setBrightness(5);
+  matrix.setBrightness(60);
   matrix2.begin();  
   matrix2.setTextWrap(false);
-  matrix2.setBrightness(5);
+  matrix2.setBrightness(60);
   Serial.begin(57600);
   Serial.println();
   Serial.println("start");
@@ -210,60 +210,68 @@ void drawBlink(int x, int y, int color){
   int looper = 5;
   for(int f=2;f<=looper;f++){
     matrix.fillScreen(0);
+    matrix2.fillScreen(0);
     switch (f) {
       case 2:
         matrix.drawBitmap(x, y, blink_2, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_2, 8, 8, colors[color]);
+        matrix2.drawBitmap(x, y, blink_2, 8, 8, colors[color]);
         break;
      case 3:
         matrix.drawBitmap(x, y, blink_3, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_3, 8, 8, colors[color]);
+        matrix2.drawBitmap(x, y, blink_3, 8, 8, colors[color]);
         break;
      case 4:
         matrix.drawBitmap(x, y, blink_4, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_4, 8, 8, colors[color]);
+        matrix2.drawBitmap(x, y, blink_4, 8, 8, colors[color]);
         break;
      case 5:
         matrix.drawBitmap(x, y, blink_5, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_5, 8, 8, colors[color]);
+        matrix2.drawBitmap(x, y, blink_5, 8, 8, colors[color]);
         break;
     }    
     matrix.show();
+    matrix2.show();
     delay(50);
   }
   matrix.fillScreen(1);
   matrix.show();
+  matrix2.fillScreen(1);
+  matrix2.show();
   //draw open blink
   looper = 1;
   for(int f=5;f>=looper;f--){
     matrix.fillScreen(0);
+    matrix2.fillScreen(0);
     switch (f) {
       case 5:
         matrix.drawBitmap(x, y, blink_5, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_5, 8, 8, colors[color]);
+        matrix2.drawBitmap(x, y, blink_5, 8, 8, colors[color]);
         break;
      case 4:
         matrix.drawBitmap(x, y, blink_4, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_4, 8, 8, colors[color]);
+        matrix2.drawBitmap(x, y, blink_4, 8, 8, colors[color]);
         break;
      case 3:
         matrix.drawBitmap(x, y, blink_3, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_3, 8, 8, colors[color]);
+        matrix2.drawBitmap(x, y, blink_3, 8, 8, colors[color]);
         break;
      case 2:
         matrix.drawBitmap(x, y, blink_2, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_2, 8, 8, colors[color]);
+        matrix2.drawBitmap(x, y, blink_2, 8, 8, colors[color]);
         break;
      case 1:
         matrix.drawBitmap(x, y, blink_1, 8, 8, colors[color]);
-        matrix.drawBitmap(x+10, y, blink_1, 8, 8, colors[color]);
+        matrix2.drawBitmap(x, y, blink_1, 8, 8, colors[color]);
         break;
     }    
     matrix.show();
+    matrix2.show();
     delay(50);
   }
   matrix.fillScreen(0);
   matrix.show();
+  matrix2.fillScreen(0);
+  matrix2.show();
 }
 
 // Draw the eye(s) blinking.  If sent random x/y will bounce around matrix

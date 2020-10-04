@@ -2,13 +2,13 @@
 ** For more details see http://42bots.com.
 */
 
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+//#include <ESP8266WiFi.h>
+//#include <ESP8266WebServer.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
 #include <Fonts/Org_01.h>
-#include "index.h"
+//#include "index.h"
 #define MATRIX_HEIGHT 6
 #define MATRIX_WIDTH 21
 #define PIN 14
