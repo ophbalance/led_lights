@@ -2,17 +2,17 @@
 ** For more details see http://42bots.com.
 */
 
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+//#include <ESP8266WiFi.h>
+//#include <ESP8266WebServer.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
 //#include <Fonts/Org_01.h>
-#include "index.h"
+//#include "index.h"
 #define MATRIX_HEIGHT 8
 #define MATRIX_WIDTH 32
 #define PIN D5
-#define BUTTON_PIN D3
+#define BUTTON_PIN D1
 #define PASS 1
 
 // Setting up some loop variables here
@@ -42,7 +42,7 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(32, 8, PIN,
 
 //Colors array
 const uint16_t colors[] = {
-  matrix.Color(0, 0, 0),matrix.Color(255, 0, 0), matrix.Color(0, 0, 255), matrix.Color(0, 255, 0), matrix.Color(255, 255, 255) };
+  matrix.Color(0, 0, 0),matrix.Color(255, 0, 0), matrix.Color(0, 0, 255), matrix.Color(0, 255, 0), matrix.Color(255, 255, 255), matrix.Color(205,133,0) };
 
 //Moving vox
 const unsigned char fox1[MATRIX_HEIGHT][MATRIX_WIDTH]={
@@ -54,6 +54,18 @@ const unsigned char fox1[MATRIX_HEIGHT][MATRIX_WIDTH]={
     {0, 0, 1, 0, 0, 3, 3, 3, 0, 0, 1, 0, 0, 2, 2, 0, 0, 0, 0, 1, 1, 0, 3, 0, 3, 0, 1, 1},
     {0, 0, 0, 1, 0, 0, 3, 0, 0, 1, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 1, 3, 0, 0, 0, 3, 1, 0},
     {0, 0, 0, 0, 1, 2, 2, 2, 1, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0}
+};
+
+//tail
+const unsigned char tail[MATRIX_HEIGHT][MATRIX_WIDTH]={
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 4, 4, 4, 4, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 5, 5, 5, 5, 5, 5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 5, 5, 5, 4, 5, 4, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 4, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
 //Fox for changing brightness (reverse every other row)
@@ -78,7 +90,7 @@ void setup() {
   delay(1000);
   Serial.begin(115200);
   Serial.println();
-  Serial.println("Configuring access point...");
+  //Serial.println("Configuring access point...");
 
   //set-up the custom IP address
   //WiFi.mode(WIFI_AP_STA);
@@ -109,7 +121,7 @@ void loop() {
   //} else {
   //  matrix.setBrightness(brightLevel);
   //}
-
+  
   switch (caseloop) {
   case 1:
     drawStillFox();Serial.println("case1");
@@ -127,8 +139,16 @@ void loop() {
     drawStillFox();Serial.println("case5");
     break;
   case 6:
-    passTxt="Go Team 6004!";
+    passTxt="GO TEAM 6004!";
     drawText(pass,passTxt);Serial.println("case6");
+    passTxt="";
+    break;
+  case 7:
+    passTxt="WHERE'S OUR TAIL";
+    drawText(pass,passTxt);Serial.println("case7");
+    drawTail();
+    passTxt="ON THE ROBOT";
+    drawText(pass,passTxt);Serial.println("case7");
     passTxt="";
     break;
   default:
@@ -140,9 +160,9 @@ void loop() {
   //how many times we're in here
   caseloop++;
   myloop++;
-  pass++;
+  //pass++;
   if(pass >= 3) pass=1;
-  if(caseloop >= 7) caseloop = 1;
+  if(caseloop >= 8) caseloop = 1;
 }
 
 void readPinState(){
@@ -160,8 +180,10 @@ void readPinState(){
       buttonState = reading;
 
       // only toggle the LED if the new button state is HIGH
-      if (buttonState == LOW) {
+      if (buttonState == HIGH) {
+        Serial.println("button");
         pass++;
+        drawText(pass, "BUTTON");
         if(pass>3){pass=1;}
       }
     }    
@@ -220,15 +242,29 @@ void drawFlashyFox(){
         readPinState();
       }
       
-    } delay(60);
+    } delay(450);
     matrix.show();
   }   
   //matrix.setBrightness(brightLevel);
   //delay(300);
 }
 
+void drawTail(){
+  matrix.fillScreen(0);
+  matrix.show();
+  delay(300);
+  
+  for(unsigned char x=0; x<MATRIX_HEIGHT; x++) {
+    for(unsigned char y=0; y<MATRIX_WIDTH; y++) {      
+      matrix.drawPixel(y, x, colors[tail[x][y]]);    
+      readPinState();  
+    }
+  } matrix.show();
+  delay(10000);  
+}
+
 void drawText(int passme, String passtxt) {
-  int looper=150;
+  int looper=250;
   matrix.setTextColor(colors[passme]);
   for(int f=0;f<looper;f++){
     matrix.fillScreen(0);
@@ -249,7 +285,7 @@ void drawText(int passme, String passtxt) {
     } else if (passme==3){
       matrix.print(F("6004 GREEN ALLIANCE"));
       readPinState();
-    }
+    } 
     
     
     matrix.show();
